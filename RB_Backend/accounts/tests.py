@@ -4,34 +4,38 @@ from django.contrib.auth import get_user_model
 
 class AccountTests(TestCase):
     """ tests for user model """
-    def test_customuser_model(self):
-        """ test user model """
-        User = get_user_model()
-        user = User.objects.create_user(
+
+    @classmethod
+    def setUpTestData(cls):
+        """ setting up data for testing """
+        UserModel = get_user_model()
+        cls.user = UserModel.objects.create_user(
             email="test@user.com",
             firstname="test",
             lastname="user",
             password="testpassword"
         )
-        self.assertEqual(user.email, "test@user.com")
-        self.assertEqual(user.firstname, "test")
-        self.assertEqual(user.lastname, "user")
-        self.assertFalse(user.is_staff, False)
-
-    def test_superuser_creation(self):
-        """ test superuser creation """
-        User = get_user_model()
-        user = User.objects.create_superuser(
+        cls.superuser = UserModel.objects.create_superuser(
             email="admin@user.com",
             firstname="admin",
             lastname="user",
             password="pass@123"
         )
-        self.assertEqual(user.email, "admin@user.com")
-        self.assertEqual(user.firstname, "admin")
-        self.assertEqual(user.lastname, "user")
-        self.assertTrue(user.is_staff)
-        self.assertTrue(user.is_superuser)
+
+    def test_customuser_model(self):
+        """ test user model """
+        self.assertEqual(self.user.email, "test@user.com")
+        self.assertEqual(self.user.firstname, "test")
+        self.assertEqual(self.user.lastname, "user")
+        self.assertFalse(self.user.is_staff, False)
+
+    def test_superuser_creation(self):
+        """ test superuser creation """
+        self.assertEqual(self.superuser.email, "admin@user.com")
+        self.assertEqual(self.superuser.firstname, "admin")
+        self.assertEqual(self.superuser.lastname, "user")
+        self.assertTrue(self.superuser.is_staff)
+        self.assertTrue(self.superuser.is_superuser)
 
 
 class AccountViewsTests(TestCase):
@@ -54,11 +58,12 @@ class AccountViewsTests(TestCase):
 
     def test_user_login_view(self):
         """ test user login view """
+        user = AccountTests().superuser
         self.test_user_registration_view()
         response = self.client.post(
             '/api/v1/accounts/login/',
             {
-                'email': 'test@user.com',
+                'email':  'test@user.com',
                 'password': 'testpassword'
             }
         )

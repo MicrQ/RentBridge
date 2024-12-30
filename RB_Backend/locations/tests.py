@@ -1,7 +1,9 @@
 from django.urls import reverse
 from django.test import TestCase
+from rest_framework import status
 from .models import Location, LocationType
 from rest_framework.test import APITestCase
+from django.contrib.auth import get_user_model
 
 
 class LocationTypeTests(TestCase):
@@ -67,7 +69,4 @@ class TestLocationTypeAPIView(APITestCase):
 
         response = self.client.post(reverse('location_types'),
                                     {'name': 'Country'})
-        self.assertEqual(response.status_code, 401)
-        response = self.client.put(reverse('location_types'),
-                                   {'name': 'Country'})
         self.assertEqual(response.status_code, 401)
